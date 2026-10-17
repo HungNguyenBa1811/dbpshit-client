@@ -1,118 +1,278 @@
-# DB PTIT Client
+# PTIT Studio & DB Client
 
-Một client Python để giải và nộp bài tập cơ sở dữ liệu trên `db.ptit.edu.vn`. Công cụ này tự động hóa quá trình đăng nhập, cho phép tìm kiếm và xem bài tập cục bộ, đồng thời cung cấp quy trình liền mạch để chạy và nộp các câu lệnh SQL.
+Bộ công cụ toàn diện hỗ trợ sinh viên làm bài tập và thi trực tuyến trên hệ thống `db.ptit.edu.vn`. Dự án tích hợp 2 phân hệ chính:
 
-## Tính năng
+1. **Lập Chình Mạng**: Môi trường Web IDE All-in-One chuyên sâu dành cho môn **Lập trình mạng Java (JNP)** với Monaco Editor chuẩn IntelliJ Darcula, bộ sinh code tự động theo giao thức, trình biên dịch OpenJDK 17 trực tiếp, công cụ dò gói tin Socket, chế độ Debug Mock Server nội bộ và nộp bài trực tiếp.
+2. **PTIT DB Client**: Công cụ CLI tương tác giải và nộp bài tập cơ sở dữ liệu SQL tự động qua terminal.
 
--   **Tự động đăng nhập**: Sử dụng Selenium để đăng nhập và trích xuất JWT token tự động.
--   **Tìm kiếm & Duyệt bài tập**: Tìm kiếm theo từ khóa hoặc duyệt theo chủ đề (Section). Hỗ trợ lọc bài tập theo trạng thái (AC, Chưa làm, ...).
--   **Hiển thị trên trình duyệt**: Xem mô tả bài tập trực tiếp trên trình duyệt web mặc định của bạn.
--   **Thực thi SQL**: Chạy thử các câu lệnh SQL với API để kiểm tra giải pháp của bạn (Dry Run).
--   **Nộp bài & Lịch sử**: Nộp giải pháp, nhận phản hồi ngay lập tức và xem lại lịch sử các lần nộp trước đó.
--   **Định dạng kết quả**: Kết quả truy vấn được hiển thị dưới dạng bảng sạch sẽ, dễ đọc.
--   **Xử lý lỗi**: Thông báo lỗi rõ ràng cho các vấn đề phổ biến như "Access Denied" hoặc lỗi cú pháp SQL.
--   **Làm sạch Payload**: Tự động xóa các comment khỏi SQL của bạn trước khi nộp để tránh lỗi API.
--   **Tự động chọn loại DB**: Tự động lấy ID loại cơ sở dữ liệu từ API cho từng bài tập.
+---
 
-## Yêu cầu
+## Mục lục
 
--   Python 3.x
+- [Tính năng nổi bật](#tính-năng-nổi-bật)
+- [Yêu cầu hệ thống](#yêu-cầu-hệ-thống)
+- [Hướng dẫn cài đặt chi tiết](#hướng-dẫn-cài-đặt-chi-tiết)
+  - [Bước 1: Cài đặt Python và Java JDK](#bước-1-cài-đặt-python-và-java-jdk)
+  - [Bước 2: Clone repository](#bước-2-clone-repository)
+  - [Bước 3: Thiết lập môi trường ảo và cài đặt thư viện](#bước-3-thiết-lập-môi-trường-ảo-và-cài-đặt-thư-viện)
+  - [Bước 4: Cấu hình tài khoản (.env)](#bước-4-cấu-hình-tài-khoản-env)
+- [Hướng dẫn sử dụng](#hướng-dẫn-sử-dụng)
+  - [1. Lập Chình Mạng (Web IDE Lập trình mạng Java)](#1-ptit-jnp-studio-web-ide-lập-trình-mạng-java)
+  - [2. PTIT DB Client (Luyện tập SQL)](#2-ptit-db-client-luyện-tập-sql)
+- [Cấu trúc thư mục dự án](#cấu-trúc-thư-mục-dự-án)
+- [Khắc phục sự cố thường gặp](#khắc-phục-sự-cố-thường-gặp)
 
-## Cài đặt
+---
 
-1.  **Clone repository**.
-Với Windows có giới hạn đường dẫn 260 ký tự, bạn nên làm theo các bước sau để tránh lỗi khi clone repo:
-    > Tránh lỗi hiển thị tiếng Việt bị méo trong các file HTML: Đầu tiên chạy `chcp 65001` để chuyển sang UTF-8.
--   Mở PowerShell với quyền Administrator và bật hỗ trợ đường dẫn dài của Git:
+## Tính năng nổi bật
 
-    ```powershell
-    git config --system core.longpaths true
-    ```
+### Phân hệ Lập Chình Mạng (Lập trình mạng)
 
--   Clone repo về một đường dẫn ngắn để tránh tràn 260 ký tự (ví dụ `C:\src` hoặc `D:\code`):
+- **Giao diện IntelliJ Darcula & Monaco Editor**:
+  - Gợi ý cú pháp Java, hỗ trợ phím tắt IntelliJ: `psvm` (main), `sout` (println), `serr` (err.println), `tcpsocket` (try-with-resources TCP), `udpsocket` (DatagramSocket), `byteframe` (NIO frame), `caesar` (giải mã Caesar).
+  - Tự động tắt minimap để mở rộng tối đa không gian lập trình.
+  - Phím tắt `Ctrl + Enter` để biên dịch và chạy code tức thì.
+- **Ngân hàng đề thi đầy đủ**:
+  - Tích hợp sẵn 86+ đề bài JNP từ các đợt thi và kiểm tra thực tế tại PTIT.
+  - Phân loại rõ ràng theo từng nhóm giao thức: `TCP Byte Raw` (port 2206), `TCP Data` (port 2207), `TCP Character` (port 2208), `TCP Object` (port 2209), `TCP GZIP` (port 2210), `TCP NIO` (port 2211), `UDP` (port 2207), `SOAP / RMI` (port 2221).
+- **Bộ sinh mã nguồn tự động (Code Generator)**:
+  - Tự động sinh khung chương trình Java tối ưu cho từng dạng bài, điền sẵn thông số IP máy chủ, Port, mã sinh viên và mã đề.
+  - Tích hợp sẵn thuật toán mẫu tối ưu cho các dạng bài phổ biến (ví dụ bài 701: tìm khoảng cách nhỏ nhất giữa các số).
+- **Trình biên dịch & thực thi Java OpenJDK trực tiếp**:
+  - Sử dụng OpenJDK 17 (`javac.exe` / `java.exe`) nội bộ, đo thời gian biên dịch (ms), thời gian thực thi và xuất log chi tiết `stdout`/`stderr`.
+- **Chế độ Debug Mock Server nội bộ (127.0.0.1)**:
+  - Chạy một máy chủ TCP/UDP ảo ngay trên máy local để kiểm thử logic và giao tiếp socket của code sinh viên với các bộ test case mẫu mà không cần kết nối tới máy chủ trường hay phụ thuộc ca thi mở đề.
+- **Công cụ dò gói tin Socket trực tiếp (Socket Probe)**:
+  - Gửi thử gói tin bắt tay (handshake) hoặc dữ liệu thô (chuỗi UTF-8 hoặc Hex), kiểm tra độ trễ (latency), nhận bản kết xuất Hex dump từ máy chủ.
+- **Thao tác file linh hoạt**:
+  - Hỗ trợ tải file `.java` từ máy tính lên trình soạn thảo.
+  - Hỗ trợ kéo - thả (drag & drop) file trực tiếp vào vùng soạn thảo code.
+  - Nút lưu file `.java` về máy tính chỉ với một click.
+- **Giao diện tùy biến linh hoạt**:
+  - Nút ẩn/hiện thanh bên danh sách bài tập.
+  - Thanh kéo (resizer) tự do điều chỉnh kích thước giữa ngăn đề bài, ngăn soạn thảo và bảng điều khiển terminal. Tự động lưu kích thước vào `localStorage`.
+- **Nộp bài trực tiếp lên PTIT API**:
+  - Hỗ trợ xoay vòng tài khoản từ file cấu hình, tự động đăng nhập lấy Bearer Token và nộp code trực tiếp lên hệ thống chấm điểm của trường.
 
-    ```powershell
-    cd C:\src
-    git clone https://github.com/thanhtrnnn/dbpshit-client.git
-    ```
+### Phân hệ DB Client (Cơ sở dữ liệu SQL)
 
--   Nếu đã clone và gặp lỗi với các file dài, hãy xóa thư mục cũ, chạy lệnh `core.longpaths` ở trên rồi clone lại vào đường dẫn ngắn.
+- Tự động đăng nhập và duy trì phiên làm việc với API PTIT.
+- Tìm kiếm, lọc và phân loại câu hỏi SQL theo chủ đề (Section), trạng thái làm bài (AC, Đang làm, Chưa làm).
+- Hiển thị đề bài trên trình duyệt web mặc định.
+- Chạy thử câu lệnh SQL (Dry Run) và nộp bài trực tiếp từ file `solution.sql`.
+- Xem lại lịch sử các lần nộp bài trước đó với bảng kết quả chi tiết.
 
+---
 
+## Yêu cầu hệ thống
 
-2.  **Thiết lập môi trường ảo và cài đặt thư viện**:
-    Khuyến nghị sử dụng môi trường ảo để tránh xung đột thư viện.
+- **Hệ điều hành**: Windows 10/11, macOS hoặc Linux.
+- **Python**: Phiên bản 3.8 trở lên.
+- **Java Development Kit (JDK)**: Khuyến nghị OpenJDK 17 (hoặc OpenJDK 21) để biên dịch và chạy các chương trình Java.
+- **Git**: Đã cài đặt Git trên máy tính.
 
-    ```bash
-    # Tạo môi trường ảo
-    python -m venv .venv
+---
 
-    # Kích hoạt môi trường ảo
-    # Trên Windows:
-    .venv\Scripts\activate
+## Hướng dẫn cài đặt chi tiết
 
-    # Cài đặt các thư viện phụ thuộc
-    pip install -r requirements.txt
-    ```
+### Bước 1: Cài đặt Python và Java JDK
 
-3.  **Cấu hình môi trường**:
-    **Copy file `.env.example` và đổi tên** thành `.env` trong **thư mục gốc** với các biến sau:
-    ```env
-    QLDT_USERNAME=tên_đăng_nhập_của_bạn
-    QLDT_PASSWORD=mật_khẩu_của_bạn
-    LOGIN_URL=https://dbapi.ptit.edu.vn/api/auth/auth/ptit-login
-    BASE_API_URL=https://dbapi.ptit.edu.vn/api/app
-    AUTH_API_URL=https://dbapi.ptit.edu.vn/api/auth
-    DEFAULT_DB_TYPE=11111111-1111-1111-1111-111111111111
-    USER_ID=
-    ```
-    > *Lưu ý*: 
-    > - `USER_ID` được script tự điền nếu thiếu, hãy để trống giá trị này.
-    > - `DEFAULT_DB_TYPE` là loại cơ sở dữ liệu mặc định (thường là MySQL với mã toàn số 1) nếu không lấy được từ API.
+1. **Cài đặt Python**:
+
+   - Tải bộ cài đặt từ [python.org](https://www.python.org/downloads/).
+   - Khi cài đặt trên Windows, nhớ tích chọn **"Add Python to PATH"**.
+2. **Cài đặt Java JDK (OpenJDK 17)**:
+
+   - Tải bản cài đặt OpenJDK 17 từ Eclipse Adoptium (Temurin): [adoptium.net](https://adoptium.net/temurin/releases/?version=17).
+   - Chọn gói **JDK .msi** (Windows) và cài đặt. Hãy tích chọn **"Set JAVA_HOME variable"** và **"Add to PATH"** trong quá trình cài.
+   - Kiểm tra cài đặt thành công bằng cách mở terminal/command prompt và gõ:
+     ```bash
+     java -version
+     javac -version
+     ```
+
+### Bước 2: Clone repository
+
+Trên Windows, để tránh lỗi giới hạn đường dẫn 260 ký tự (MAX_PATH) khi tải các file bài tập, thực hiện theo các bước sau:
+
+1. Mở PowerShell với quyền Administrator và bật tính năng hỗ trợ đường dẫn dài:
+
+   ```powershell
+   git config --system core.longpaths true
+   ```
+2. Clone repository về một thư mục có đường dẫn ngắn (ví dụ `C:\src` hoặc `D:\pro`):
+
+   ```bash
+   git clone https://github.com/thanhtrnnn/dbpshit-client.git
+   cd dbpshit-client
+   ```
+
+### Bước 3: Thiết lập môi trường ảo và cài đặt thư viện
+
+Khuyến nghị sử dụng môi trường ảo (`.venv`) để quản lý các gói phụ thuộc một cách độc lập:
+
+```bash
+# 1. Tạo môi trường ảo Python
+python -m venv .venv
+
+# 2. Kích hoạt môi trường ảo
+# Trên Windows (Command Prompt hoặc PowerShell):
+.venv\Scripts\activate
+# Trên macOS / Linux:
+source .venv/bin/activate
+
+# 3. Cài đặt các thư viện cần thiết
+pip install -r requirements.txt
+```
+
+Các thư viện chính được cài đặt bao gồm:
+
+- `fastapi`: Framework API cho backend web server.
+- `uvicorn`: ASGI server hiệu năng cao phục vụ ứng dụng web.
+- `requests`: Xử lý các yêu cầu HTTP kết nối API trường.
+- `python-dotenv`: Đọc biến môi trường từ file `.env`.
+- `colorama`: Định dạng màu sắc đầu ra terminal.
+- `pydantic`: Kiểm thực dữ liệu request/response.
+
+### Bước 4: Cấu hình tài khoản (.env)
+
+Tạo file `.env` tại thư mục gốc của dự án (sao chép từ `.env.example` nếu có):
+
+```env
+QLDT_USERNAME=B23DCATxxx
+QLDT_PASSWORD=mat_khau_qldt_cua_ban
+LOGIN_URL=https://dbapi.ptit.edu.vn/api/auth/auth/ptit-login
+BASE_API_URL=https://dbapi.ptit.edu.vn/api/app
+AUTH_API_URL=https://dbapi.ptit.edu.vn/api/auth
+DEFAULT_DB_TYPE=11111111-1111-1111-1111-111111111111
+USER_ID=
+```
+
+> **Lưu ý**:
+>
+> - Điền đúng mã sinh viên vào `QLDT_USERNAME` và mật khẩu trang QLĐT/dbapi vào `QLDT_PASSWORD`.
+> - Để trống mục `USER_ID`, chương trình sẽ tự động truy vấn và điền sau khi đăng nhập thành công.
+> - Nếu bạn có danh sách nhiều tài khoản để lấy đề thi, có thể tạo thêm file `ptit.env` với định dạng các cặp `QLDT_USERNAME=` và `QLDT_PASSWORD=`.
+
+---
 
 ## Hướng dẫn sử dụng
 
-1.  **Chạy client**:
-    ```bash
-    python client.py
-    ```
-    > Hướng dẫn cho gà mờ:
-    > - Mày sẽ thấy menu tương tác trong terminal. 
-    > - Chọn 1 để tìm kiếm bài tập hoặc 2 để duyệt theo dạng bài. 
-    > - Nhập số thứ tự hiển thị trước tên bài tập để chọn. Trình duyệt sẽ mở đề bài.
-    > - Làm bài trong `solution.sql`, sau đó quay lại menu để chạy thử (3) hoặc nộp bài (4).
+### 1. Lập Chình Mạng (Web IDE Lập trình mạng Java)
 
-2.  **Các tùy chọn Menu**:
-    - Giao diện ban đầu:
-        -   **1. Tìm kiếm bài tập (Local)**: Nhập từ khóa để tìm kiếm bài tập trong thư mục `problems/`. Hỗ trợ lọc theo trạng thái (Đã làm, Chưa làm, Đang làm).
-        -   **2. Duyệt bài tập theo Section**: Duyệt bài tập theo cấu trúc thư mục/chương. Hỗ trợ lọc theo trạng thái.
-    - Giao diện sau khi chọn bài:
-        -   **3. Chạy thử code**: (Chỉ hiện khi đã chọn bài) Thực thi mã SQL hiện có trong `solution.sql` với bài tập đã chọn.
-        -   **4. Nộp bài**: (Chỉ hiện khi đã chọn bài) Nộp mã SQL trong `solution.sql` để chấm điểm.
-        -   **5. Xem lịch sử nộp bài**: (Chỉ hiện khi đã chọn bài) Xem lại lịch sử các lần nộp trước đó của bài tập hiện tại.
-    -   **0. Thoát**: Thoát ứng dụng.
+Đây là giao diện web tổng hợp giúp lập trình, biên dịch, chạy thử socket và nộp bài tập môn Lập trình mạng.
 
-3.  **Quy trình làm việc**:
-    -   Chọn tùy chọn **1** hoặc **2** để tìm/chọn bài tập.
-    -   Trong danh sách bài tập, bạn có thể lọc theo trạng thái: `[A]ll`, `[C]ompleted` (AC), `[T]ried`, `[U]nsubmitted`.
-    -   Sau khi chọn, bài tập sẽ mở trong trình duyệt và file `solution.sql` sẽ được tạo/cập nhật.
-    -   Mở `solution.sql` trong trình soạn thảo của bạn (VS Code, Notepad, ...).
-    -   Viết câu lệnh SQL của bạn vào `solution.sql` (bên dưới phần header).
-    -   Quay lại menu chính, chọn tùy chọn **3** để kiểm tra thử (Dry Run).
-    -   Chọn tùy chọn **4** để nộp bài và nhận kết quả chấm.
-    -   Chọn tùy chọn **5** nếu muốn xem lại lịch sử nộp bài.
+#### Cách khởi động:
 
-## Khắc phục sự cố
+- **Cách 1 (Nhanh nhất trên Windows)**: Nhấp đúp chuột vào file [run_jnp_studio.bat](<file:///e:/OneDrive%20-%20ptit.edu.vn/pro/python/dbpshit-client/run_jnp_studio.bat>). Trình duyệt sẽ tự động mở trang web tại địa chỉ `http://127.0.0.1:8000`.
+- **Cách 2 (Bằng dòng lệnh)**:
 
--   **Đăng nhập thất bại**: Kiểm tra `QLDT_USERNAME` và `QLDT_PASSWORD` trong `.env`. Đảm bảo Chrome đã được cài đặt.
--   **Access Denied (401)**: Token có thể đã hết hạn. Khởi động lại script để đăng nhập lại.
--   **Trình duyệt không mở**: Đảm bảo hệ thống của bạn đã cấu hình trình duyệt mặc định.
--   **FileNotFoundError**: Đảm bảo thư mục `problems/` tồn tại và chứa các file `.html`.
+  ```bash
+  python web/app.py
+  ```
 
-## Cấu trúc thư mục
+  Sau đó mở trình duyệt và truy cập: `http://127.0.0.1:8000`.
 
--   `client.py`: Script ứng dụng chính.
--   `problems/`: Thư mục chứa các file HTML bài tập.
--   `solution.sql`: File tạm thời để viết code SQL của bạn.
--   `.env`: File cấu hình (chứa thông tin nhạy cảm).
--   `requirements.txt`: Các thư viện Python phụ thuộc.
+#### Các thao tác chính trong giao diện:
+
+1. **Chọn bài tập**:
+   - Danh sách bài tập nằm ở thanh bên trái, phân nhóm theo giao thức: TCP Byte, TCP Data, TCP Char, TCP Object, TCP NIO, UDP, SOAP.
+   - Có thể nhập từ khóa vào ô tìm kiếm để lọc bài theo mã (code/alias) hoặc tên bài.
+   - Nhấn nút `[Ẩn Danh sách]` trên thanh điều hướng để thu gọn thanh bên, mở rộng không gian viết code.
+2. **Sinh mã nguồn mẫu**:
+   - Nhấn nút `[Mẫu] Sinh Code Mẫu`. Chương trình sẽ tự động chèn khung code Java hoàn chỉnh tương ứng với giao thức và cổng kết nối của bài tập đã chọn.
+3. **Mở file và lưu file**:
+   - Nhấn `[Tải lên] Mở File` hoặc kéo thả trực tiếp file `.java` từ máy tính vào khung soạn thảo.
+   - Nhấn `[Tải về] Lưu File` để lưu mã nguồn hiện tại thành file `.java` về máy tính.
+4. **Co giãn các khung nhìn (Resize)**:
+   - Kéo thanh phân cách dọc giữa danh sách bài tập và không gian làm việc để chỉnh độ rộng.
+   - Kéo thanh phân cách dọc giữa cột đề bài và trình soạn thảo code để cân đối tỷ lệ nhìn.
+   - Kéo thanh phân cách ngang trên đầu bảng điều khiển phía dưới để nâng cao/hạ thấp cửa sổ Terminal.
+5. **Chạy thử code với máy chủ thi thật**:
+   - Nhập đúng Mã SV và Mã câu hỏi (qCode) trên thanh điều hướng.
+   - Nhấn `[Chạy] Chạy Code Java` (hoặc bấm tổ hợp phím `Ctrl + Enter`). Backend sẽ tự động gọi OpenJDK 17 để biên dịch và chạy file `Main.java`, sau đó hiển thị chi tiết kết quả trong Cửa sổ Terminal.
+6. **Kiểm thử với chế độ Mock Server (Debug nội bộ)**:
+   - Nhấn nút `[Debug] Test Mock` (hoặc nút `Debug Mock 701` trong ô thông tin máy chủ).
+   - Hệ thống sẽ kích hoạt một Mock Server chạy cục bộ tại `127.0.0.1`, tự động đóng gói dữ liệu kiểm thử, kiểm tra kết quả trả về của sinh viên và thông báo `CHÍNH XÁC (PASS)` hoặc `SAI KẾT QUẢ (FAIL)` mà không cần phụ thuộc vào server trường.
+7. **Dò kết nối Socket trực tiếp**:
+   - Nhấn nút `[Socket] Dò Kết Nối` để chuyển sang tab Socket Probe.
+   - Nhập địa chỉ IP, Port, chọn giao thức TCP/UDP và nội dung tin nhắn để kiểm tra bắt tay handshake trực tiếp với server.
+8. **Nộp bài lên hệ thống PTIT**:
+   - Chuyển sang tab `Nộp bài PTIT API`.
+   - Chọn tài khoản đã lưu để tự động đăng nhập lấy Bearer token (hoặc dán token thủ công).
+   - Nhấn `Nộp bài lên PTIT` và xem phản hồi chấm điểm của hệ thống.
+
+---
+
+### 2. PTIT DB Client (Luyện tập SQL)
+
+Phân hệ chạy trực tiếp trong dòng lệnh dành cho việc luyện tập các bài tập Cơ sở dữ liệu:
+
+```bash
+python client.py
+```
+
+#### Quy trình làm bài SQL:
+
+1. Chọn tùy chọn `1` (Tìm kiếm bài tập) hoặc `2` (Duyệt theo Section/Dạng bài).
+2. Chọn bài tập muốn làm. Trình duyệt sẽ mở nội dung câu hỏi và file `solution.sql` sẽ được tạo ở thư mục gốc.
+3. Mở file `solution.sql` bằng trình soạn thảo bất kỳ và viết câu truy vấn SQL của bạn vào bên dưới phần thông tin đề bài.
+4. Quay lại cửa sổ dòng lệnh:
+   - Chọn `3` để **Chạy thử code** (Dry Run) và xem bảng kết quả truy vấn.
+   - Chọn `4` để **Nộp bài** và nhận phản hồi chấm điểm từ hệ thống.
+   - Chọn `5` để xem lại lịch sử các lần nộp bài trước đó.
+5. Nhập `0` khi muốn thoát chương trình.
+
+---
+
+## Cấu trúc thư mục dự án
+
+```text
+dbpshit-client/
+├── web/                           # Mã nguồn phân hệ Web IDE (Lập Chình Mạng)
+│   ├── app.py                     # Backend FastAPI: compiler, executor, mock socket, PTIT proxy
+│   └── static/                    # Frontend tĩnh
+│       ├── index.html             # Giao diện chính người dùng
+│       ├── style.css              # Giao diện IntelliJ Darcula, dark theme, splitters
+│       ├── app.js                 # Bộ điều khiển frontend, Monaco Editor, socket & mock
+│       └── java_templates.js      # Bộ sinh mã Java tự động cho tất cả các giao thức
+├── sample_responses/              # Dữ liệu câu hỏi thu thập từ hệ thống PTIT
+│   ├── master_jnp_questions_bank.json # Ngân hàng đầy đủ 86 đề bài Lập trình mạng
+│   ├── all_jnp_public_questions.json  # Danh sách bài tập JNP công khai
+│   ├── all_sql_questions.json         # Danh sách 175 bài tập SQL
+│   └── contest/                   # Dữ liệu đề thi theo từng đợt kiểm tra
+├── problems/                      # Thư mục chứa đề bài SQL dạng HTML
+├── client.py                      # Script dòng lệnh làm bài tập SQL
+├── solution.sql                   # File viết mã SQL khi làm bài với client.py
+├── run_jnp_studio.bat             # File khởi động nhanh Lập Chình Mạng trên Windows
+├── requirements.txt               # Danh sách thư viện Python phụ thuộc
+├── .env                           # File cấu hình thông tin đăng nhập cá nhân
+└── README.md                      # Tài liệu hướng dẫn sử dụng
+```
+
+---
+
+## Khắc phục sự cố thường gặp
+
+### 1. Lỗi "Không tìm thấy JDK" hoặc không biên dịch được Java
+
+- **Nguyên nhân**: Máy tính chưa cài đặt JDK hoặc biến môi trường `JAVA_HOME` chưa được thiết lập.
+- **Cách khắc phục**:
+  - Cài đặt OpenJDK 17 từ [adoptium.net](https://adoptium.net/).
+  - Đảm bảo lệnh `javac -version` chạy được trong cửa sổ dòng lệnh.
+  - Backend `web/app.py` tự động quét các đường dẫn mặc định của Eclipse Adoptium (`C:\Program Files\Eclipse Adoptium\jdk-17...`), Oracle JDK và `PATH`.
+
+### 2. Lỗi kết nối Socket "Connection Timed Out" (Hết thời gian chờ)
+
+- **Nguyên nhân**:
+  - Máy chủ thi PTIT (`36.50.135.242`) chỉ mở phản hồi cho cặp `studentCode;qCode` khi sinh viên đang trong phiên thi/làm bài thực tế.
+  - Tường lửa (Firewall) hoặc mạng nội bộ chặn kết nối các cổng từ `2206` đến `2221`.
+- **Cách khắc phục**:
+  - Khi luyện tập bên ngoài phòng thi, sử dụng nút **`[Debug] Test Mock`** để kiểm thử thuật toán với Mock Server nội bộ (`127.0.0.1`), không cần phụ thuộc vào mạng trường.
+
+### 3. Lỗi xác thực "401 Unauthorized" khi nộp bài
+
+- **Nguyên nhân**: Phiên đăng nhập hết hạn hoặc tài khoản trong file `.env` chưa chính xác.
+- **Cách khắc phục**:
+  - Kiểm tra lại mã sinh viên và mật khẩu trong file `.env`.
+  - Trên giao diện web, chọn lại tài khoản trong danh sách thả xuống ở tab `Nộp bài PTIT API` để hệ thống tự động làm mới Bearer Token.

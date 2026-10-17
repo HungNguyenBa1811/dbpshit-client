@@ -5,3 +5,5 @@ solutions
 solution.sql
 hmm.js
 api_tester.py
+exams/
+*exam*.json

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lập Chình Mạng - Môi trường Lập trình mạng Java</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+</head>
+
+<body>
+
+    <!-- THANH ĐIỀU HƯỚNG TRÊN (TOP NAVBAR) -->
+    <header class="navbar">
+        <div class="nav-brand">
+            <button class="btn btn-outline" id="btn-toggle-sidebar" title="Thu gọn / Mở rộng danh sách bài tập">
+                [Ẩn Danh sách]
+            </button>
+            <span class="brand-icon">UCP TDP</span>
+            <span class="brand-title">Lập Chình Mạng</span>
+            <span class="brand-badge" id="app-badge">86 Bài Tập</span>
+        </div>
+
+        <div class="nav-center">
+            <div class="nav-input-group">
+                <span class="nav-input-label">Mã SV:</span>
+                <input type="text" id="input-student-code" class="nav-input" placeholder="B23DCAT144"
+                    value="B23DCAT144">
+            </div>
+
+            <div class="nav-input-group">
+                <span class="nav-input-label">Mã đề:</span>
+                <input type="text" id="input-q-code" class="nav-input" placeholder="FF49DC02" value="FF49DC02">
+            </div>
+
+            <div class="nav-input-group">
+                <span class="nav-input-label">Máy chủ:</span>
+                <input type="text" id="input-server-host" class="nav-input" style="width: 120px;"
+                    placeholder="36.50.135.242" value="36.50.135.242">
+            </div>
+        </div>
+
+        <div class="nav-actions">
+            <button class="btn btn-secondary" id="btn-generate-template"
+                title="Sinh mã nguồn mẫu Java tự động cho bài tập này">
+                [Mẫu] Sinh Code Mẫu
+            </button>
+            <button class="btn btn-primary" id="btn-run-code"
+                title="Biên dịch và chạy chương trình Java kết nối đến máy chủ">
+                [Chạy] Chạy Code Java
+            </button>
+            <button class="btn btn-warning" id="btn-mock-debug"
+                title="Chạy kiểm thử Mock Server nội bộ (tự động kiểm thử bài 701)">
+                [Debug] Test Mock
+            </button>
+            <button class="btn btn-accent" id="btn-toggle-socket-panel"
+                title="Công cụ kiểm tra kết nối Socket trực tiếp">
+                [Socket] Dò Kết Nối
+            </button>
+        </div>
+    </header>
+
+    <!-- NỘI DUNG CHÍNH (MAIN BODY) -->
+    <div class="main-wrapper">
+
+        <!-- THANH BÊN DANH SÁCH BÀI TẬP (SIDEBAR) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="search-box">
+                    <input type="text" id="search-input" class="search-input"
+                        placeholder="Tìm kiếm bài tập (mã, tên, giao thức)...">
+                </div>
+                <div class="filter-chips">
+                    <span class="filter-chip active" data-filter="ALL">Tất cả</span>
+                    <span class="filter-chip" data-filter="TCP_BYTE">TCP Byte</span>
+                    <span class="filter-chip" data-filter="TCP_DATA">TCP Data</span>
+                    <span class="filter-chip" data-filter="TCP_CHAR">TCP Char</span>
+                    <span class="filter-chip" data-filter="TCP_OBJ">TCP Object</span>
+                    <span class="filter-chip" data-filter="TCP_NIO">TCP NIO</span>
+                    <span class="filter-chip" data-filter="UDP">UDP</span>
+                    <span class="filter-chip" data-filter="RMI">RMI</span>
+                </div>
+            </div>
+
+            <div class="sidebar-meta">
+                <span id="filtered-count">Hiển thị: 86/86</span>
+                <span id="system-status">OpenJDK 17 Sẵn sàng</span>
+            </div>
+
+            <div class="problem-list" id="problem-list">
+                <!-- Danh sách bài tập được nạp động tại đây -->
+            </div>
+        </aside>
+
+        <!-- THANH KÉO RESIZE SIDEBAR -->
+        <div class="resizer-horizontal" id="resizer-sidebar" title="Kéo để chỉnh độ rộng danh sách bài"></div>
+
+        <!-- KHÔNG GIAN LÀM VIỆC (WORKSPACE) -->
+        <main class="workspace-area">
+
+            <div class="editor-split">
+
+                <!-- CỘT TRÁI: CHI TIẾT ĐỀ BÀI -->
+                <section class="problem-pane">
+                    <div class="pane-header">
+                        <span id="pane-problem-title">Đề bài chi tiết</span>
+                        <div class="pane-header-actions">
+                            <button class="btn btn-outline" id="btn-copy-problem-info"
+                                style="padding: 2px 8px; font-size: 11px;">
+                                Sao chép thông tin
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="problem-content" id="problem-content-area">
+                        <div class="problem-headline">
+                            <h2 id="view-title">Chọn một bài tập để bắt đầu</h2>
+                            <div class="problem-meta-row" id="view-meta-row">
+                                <span class="meta-chip">Mã bài: <strong id="view-alias">-</strong></span>
+                                <span class="meta-chip">Giao thức: <strong id="view-protocol">-</strong></span>
+                                <span class="meta-chip">Cấp độ: <strong id="view-level">-</strong></span>
+                            </div>
+                        </div>
+
+                        <div class="server-info-box" id="view-server-box">
+                            <div class="server-info-text">
+                                Máy chủ kết nối: <code id="view-server-addr">36.50.135.242:2206</code>
+                            </div>
+                            <div style="display: flex; gap: 6px;">
+                                <button class="btn btn-warning" id="btn-quick-mock-test"
+                                    style="font-size: 11px; padding: 3px 8px;" title="Kiểm thử thuật toán với dữ liệu giả lập ngay lập tức">
+                                    Debug Mock Server
+                                </button>
+                                <button class="btn btn-secondary" id="btn-quick-socket-test"
+                                    style="font-size: 11px; padding: 3px 8px;">
+                                    Thử kết nối nhanh
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="problem-description-body" id="view-description">
+                            Chọn một câu hỏi trong danh sách bên trái để xem nội dung đề bài, định dạng trao đổi gói tin
+                            và sinh mã nguồn Java tương ứng.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- THANH KÉO RESIZE GIỮA ĐỀ BÀI VÀ TRÌNH SOẠN THẢO -->
+                <div class="resizer-horizontal" id="resizer-editor-split" title="Kéo để chỉnh độ rộng giữa đề bài và code"></div>
+
+                <!-- CỘT PHẢI: TRÌNH SOẠN THẢO CODE MONACO -->
+                <section class="editor-pane" id="editor-pane">
+                    <div class="editor-tabs">
+                        <div class="editor-tab-active">
+                            <span>Main.java</span>
+                        </div>
+                        <div class="editor-actions">
+                            <input type="file" id="file-upload-input" accept=".java,.txt" style="display: none;">
+                            <button class="btn btn-outline" id="btn-upload-file" title="Tải file .java từ máy tính lên trình soạn thảo"
+                                style="padding: 2px 8px; font-size: 11px;">
+                                [Tải lên] Mở File
+                            </button>
+                            <button class="btn btn-outline" id="btn-download-file" title="Tải mã nguồn hiện tại về máy (.java)"
+                                style="padding: 2px 8px; font-size: 11px;">
+                                [Tải về] Lưu File
+                            </button>
+                            <button class="btn btn-outline" id="btn-format-code" title="Định dạng lại mã nguồn Java"
+                                style="padding: 2px 8px; font-size: 11px;">
+                                Định dạng Code
+                            </button>
+                            <button class="btn btn-outline" id="btn-reset-code"
+                                title="Khôi phục code mẫu ban đầu của bài này"
+                                style="padding: 2px 8px; font-size: 11px;">
+                                Khôi phục
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="monaco-container"></div>
+                </section>
+
+            </div>
+
+            <!-- THANH KÉO RESIZE BẢNG ĐIỀU KHIỂN DƯỚI -->
+            <div class="resizer-vertical" id="resizer-bottom-panel" title="Kéo để chỉnh chiều cao bảng điều khiển"></div>
+
+            <!-- BẢNG ĐIỀU KHIỂN BÊN DƯỚI (BOTTOM PANEL) -->
+            <footer class="bottom-panel" id="bottom-panel">
+                <div class="bottom-panel-header">
+                    <div class="panel-tabs">
+                        <div class="panel-tab active" data-tab="tab-terminal">Cửa sổ Terminal</div>
+                        <div class="panel-tab" data-tab="tab-socket">Dò kết nối Socket trực tiếp</div>
+                        <div class="panel-tab" data-tab="tab-submit">Nộp bài PTIT API</div>
+                    </div>
+
+                    <div class="panel-controls">
+                        <span id="exec-time-label" style="font-size: 11px; color: var(--text-muted);"></span>
+                        <button class="btn btn-outline" id="btn-clear-terminal"
+                            style="padding: 2px 8px; font-size: 11px;">
+                            Xóa kết quả
+                        </button>
+                        <button class="btn btn-outline" id="btn-toggle-panel-size"
+                            style="padding: 2px 8px; font-size: 11px;">
+                            Mở rộng / Thu nhỏ
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel-body">
+
+                    <!-- TAB 1: TERMINAL CONSOLE -->
+                    <div class="tab-pane active" id="tab-terminal">
+                        <div class="terminal-meta-bar" id="terminal-meta" style="display: none;">
+                            <span>Trạng thái: <span id="term-status" class="status-badge success">SẴN SÀNG</span></span>
+                            <span>Thời gian biên dịch: <strong id="term-compile-time">0ms</strong></span>
+                            <span>Thời gian chạy: <strong id="term-exec-time">0ms</strong></span>
+                            <span>Mã thoát: <strong id="term-exit-code">0</strong></span>
+                        </div>
+                        <pre class="terminal-output"
+                            id="terminal-content">Chưa có lần thực thi nào. Nhấn nút [Chạy] Chạy Code Java hoặc bấm phím tắt Ctrl + Enter để biên dịch và kết nối đến Server thi.</pre>
+                    </div>
+
+                    <!-- TAB 2: LIVE SOCKET PROBE -->
+                    <div class="tab-pane" id="tab-socket">
+                        <div class="socket-test-grid">
+                            <input type="text" id="sock-host" class="socket-input" placeholder="Máy chủ (36.50.135.242)"
+                                value="36.50.135.242">
+                            <input type="number" id="sock-port" class="socket-input" placeholder="Cổng Port"
+                                value="2206">
+                            <select id="sock-proto" class="socket-input">
+                                <option value="TCP">Giao thức TCP</option>
+                                <option value="UDP">Giao thức UDP</option>
+                            </select>
+                            <label
+                                style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary);">
+                                <input type="checkbox" id="sock-is-hex"> Dữ liệu dạng Hex
+                            </label>
+                            <button class="btn btn-accent" id="btn-send-socket-probe">
+                                Gửi gói tin Socket
+                            </button>
+                        </div>
+                        <textarea id="sock-payload" class="socket-payload-area"
+                            placeholder="Nội dung gửi đi (Ví dụ: B23DCAT144;FF49DC02)"></textarea>
+                        <div class="socket-response-box" id="sock-response-area">
+                            Kết quả phản hồi từ máy chủ sẽ hiển thị tại đây...
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: PTIT SUBMIT -->
+                    <div class="tab-pane" id="tab-submit">
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center;">
+                            <span style="font-size: 12px; color: var(--text-secondary);">Tài khoản:</span>
+                            <select id="select-saved-creds" class="socket-input" style="width: 250px;">
+                                <option value="">-- Chọn tài khoản từ ptit.env --</option>
+                            </select>
+                            <input type="password" id="input-ptit-token" class="socket-input" style="flex: 1;"
+                                placeholder="Hoặc nhập Bearer token thủ công...">
+                            <button class="btn btn-primary" id="btn-submit-code-ptit">
+                                Nộp bài lên PTIT
+                            </button>
+                        </div>
+                        <div class="socket-response-box" id="submit-response-area">
+                            Trạng thái nộp bài lên hệ thống dbapi.ptit.edu.vn sẽ hiển thị tại đây...
+                        </div>
+                    </div>
+
+                </div>
+            </footer>
+
+        </main>
+    </div>
+
+    <!-- Drag Overlay for resizing -->
+    <div id="drag-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 99999; cursor: inherit;"></div>
+
+    <!-- Scripts -->
+    <script src="java_templates.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
